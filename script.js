@@ -162,10 +162,22 @@ function announceConsecutive(message) {
     announcement.textContent = message;
     document.body.appendChild(announcement);
 
+    // 音声で発声
+    speak(message);
+
     // アニメーション後に削除
     setTimeout(() => {
         announcement.remove();
     }, 1500);
+}
+
+// 音声合成で発声
+function speak(text) {
+    if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'ja-JP';
+        speechSynthesis.speak(utterance);
+    }
 }
 
 // CPUの思考ルーチン
