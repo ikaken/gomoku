@@ -7,7 +7,7 @@ let board = [];
 let currentPlayer = CELL_BLACK;
 let isGameActive = true;
 let lastMove = null;
-let gameMode = 'pvp'; // 'pvp' or 'pve'
+let gameMode = 'pve'; // 'pvp' or 'pve'
 let isComputerTurn = false;
 
 const boardElement = document.getElementById('board');
