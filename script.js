@@ -91,13 +91,15 @@ function placeStone(row, col) {
         highlightWinLine(winLine);
         statusText.textContent = `${currentPlayer === CELL_BLACK ? '黒' : '白'}の勝ちです！`;
         
-        // CPU対戦モードの場合、音声で結果を読み上げ
+        // 音声で結果を読み上げ
         if (gameMode === 'pve') {
             if (currentPlayer === CELL_WHITE) {
                 speak('私の勝ちです');
             } else {
                 speak('あなたの勝ちです');
             }
+        } else {
+            speak(currentPlayer === CELL_BLACK ? '黒の勝ちです' : '白の勝ちです');
         }
         
         isComputerTurn = false;
