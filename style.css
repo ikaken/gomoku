@@ -1,0 +1,226 @@
+:root {
+    --bg-color: #f0f2f5;
+    --board-bg: #e0c090;
+    /* 木目調っぽいベース色 */
+    --board-line: #5d4037;
+    --black-stone: #1a1a1a;
+    --white-stone: #f0f0f0;
+    --primary-color: #4a90e2;
+    --text-color: #333;
+    --shadow-color: rgba(0, 0, 0, 0.2);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    color: #2c3e50;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.status-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    background: white;
+    padding: 10px 20px;
+    border-radius: 50px;
+    box-shadow: 0 4px 6px var(--shadow-color);
+    flex-wrap: wrap;
+    /* モバイル対応のため折り返し許可 */
+}
+
+.mode-switch {
+    display: flex;
+    gap: 10px;
+    background-color: #eee;
+    padding: 5px;
+    border-radius: 25px;
+}
+
+.mode-switch label {
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 20px;
+    transition: background-color 0.3s;
+    font-size: 0.9rem;
+}
+
+.mode-switch input[type="radio"] {
+    display: none;
+}
+
+.mode-switch label:has(input:checked) {
+    background-color: var(--primary-color);
+    color: white;
+    font-weight: bold;
+}
+
+#status-text {
+    font-size: 1.2rem;
+    font-weight: bold;
+    min-width: 120px;
+    /* 文字数変化によるガタつき防止 */
+    text-align: center;
+}
+
+.btn {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s, transform 0.1s;
+}
+
+.btn:hover {
+    background-color: #357abd;
+}
+
+.btn:active {
+    transform: scale(0.95);
+}
+
+.board {
+    display: grid;
+    grid-template-columns: repeat(15, 1fr);
+    grid-template-rows: repeat(15, 1fr);
+    width: 90vw;
+    max-width: 600px;
+    aspect-ratio: 1 / 1;
+    background-color: var(--board-bg);
+    padding: 10px;
+    border-radius: 4px;
+    box-shadow: 0 10px 20px var(--shadow-color);
+    position: relative;
+    /* 木目テクスチャ風のグラデーション */
+    background-image: linear-gradient(45deg, rgba(0, 0, 0, 0.03) 25%, transparent 25%, transparent 75%, rgba(0, 0, 0, 0.03) 75%, rgba(0, 0, 0, 0.03)),
+        linear-gradient(45deg, rgba(0, 0, 0, 0.03) 25%, transparent 25%, transparent 75%, rgba(0, 0, 0, 0.03) 75%, rgba(0, 0, 0, 0.03));
+    background-size: 20px 20px;
+    background-position: 0 0, 10px 10px;
+}
+
+.cell {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+}
+
+/* 罫線の描画 */
+.cell::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background-color: var(--board-line);
+    z-index: 0;
+}
+
+.cell::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 0;
+    height: 100%;
+    width: 1px;
+    background-color: var(--board-line);
+    z-index: 0;
+}
+
+/* 石のスタイル */
+.stone {
+    width: 80%;
+    height: 80%;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    /* アニメーション用初期状態 */
+    z-index: 1;
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+    animation: placeStone 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.stone.black {
+    background: radial-gradient(circle at 30% 30%, #555, var(--black-stone));
+}
+
+.stone.white {
+    background: radial-gradient(circle at 30% 30%, #fff, var(--white-stone));
+}
+
+@keyframes placeStone {
+    to {
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+/* 最後の手にマークをつける */
+.stone.last-move::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 30%;
+    height: 30%;
+    border-radius: 50%;
+    background-color: rgba(255, 0, 0, 0.5);
+    box-shadow: 0 0 4px rgba(255, 0, 0, 0.8);
+}
+
+/* 勝ったラインのハイライト */
+.cell.win-line {
+    background-color: rgba(255, 215, 0, 0.3);
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 600px) {
+    h1 {
+        font-size: 2rem;
+    }
+
+    .board {
+        width: 95vw;
+    }
+
+    .status-bar {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
